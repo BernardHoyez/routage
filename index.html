@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b2418">
+<title>Routage — boucles de randonnée</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="lib/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <div id="map" aria-label="Carte"></div>
+
+  <aside class="panel">
+    <header>
+      <h1>Routage</h1>
+      <p class="sub">Boucles de randonnée à distance donnée, pour animateurs</p>
+    </header>
+
+    <section>
+      <h2>1 · Point de départ</h2>
+      <div class="tabs" role="tablist">
+        <button id="tab-map" role="tab" aria-selected="true">Pointer sur la carte</button>
+        <button id="tab-gps" role="tab" aria-selected="false">Coordonnées GPS</button>
+      </div>
+      <p id="hint-map" class="hint">Touchez la carte pour placer le départ (le repère peut ensuite être déplacé).</p>
+      <div id="gps-box" hidden>
+        <div class="row">
+          <label>Latitude<input id="lat" inputmode="decimal" placeholder="43.12345" autocomplete="off"></label>
+          <label>Longitude<input id="lon" inputmode="decimal" placeholder="6.12345" autocomplete="off"></label>
+        </div>
+        <button id="btn-place" class="ghost">Placer le départ</button>
+      </div>
+      <button id="btn-locate" class="ghost small">Ma position</button>
+      <p id="start-readout" class="readout">Aucun départ défini</p>
+      <label>Fond de carte
+        <select id="base">
+          <option value="osm">OpenStreetMap</option>
+          <option value="plan">IGN Plan V2</option>
+          <option value="ortho">IGN BD Ortho</option>
+        </select>
+      </label>
+    </section>
+
+    <section>
+      <h2>2 · Distance</h2>
+      <div class="dist"><input id="dist" type="range" min="2" max="40" step="0.5" value="10"><output id="dist-out">10 km</output></div>
+    </section>
+
+    <section>
+      <h2>3 · Service de routage</h2>
+      <label><select id="provider"></select></label>
+      <label class="check"><input id="fallback" type="checkbox" checked> Basculer sur un autre service en cas d'échec</label>
+      <details>
+        <summary>À propos des services</summary>
+        <p class="hint">Aucune clé requise. <b>IGN</b> : réseau piéton BD TOPO, sans réglage possible des sentiers. <b>Valhalla</b> et <b>BRouter</b> (profil randonnée) favorisent les chemins et sentiers OSM par rapport aux routes. <b>OSRM piéton</b> ne distingue pas les chemins des routes. Vérifiez toujours le tracé sur le terrain.</p>
+      </details>
+    </section>
+
+    <section>
+      <button id="btn-run" class="primary" disabled>Proposer des boucles</button>
+      <button id="btn-cancel" class="ghost" hidden>Annuler</button>
+      <progress id="prog" max="1" value="0" hidden></progress>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="results" hidden>
+      <h2>4 · Choisir une boucle</h2>
+      <ul id="cands" class="cands"></ul>
+      <label>Nom de la randonnée<input id="name" value="" autocomplete="off"></label>
+      <div class="exports">
+        <button id="btn-gpx" class="primary" disabled>GPX</button>
+        <button id="btn-kml" class="primary" disabled>KML</button>
+        <button id="btn-both" class="ghost" disabled>GPX + KML</button>
+      </div>
+    </section>
+
+    <footer>Fonds © OpenStreetMap, © IGN · Routage : Géoplateforme IGN, OSM (Valhalla, BRouter, OSRM)</footer>
+  </aside>
+</div>
+<script src="lib/leaflet.js"></script>
+<script src="routing.js"></script>
+<script src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
